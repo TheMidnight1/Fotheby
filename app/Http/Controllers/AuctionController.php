@@ -56,4 +56,54 @@ class AuctionController extends Controller
 
         return redirect()->route('homepage')->with('success', 'Auction item added successfully!');
     }
+
+    public function edit($id)
+{
+    $auction = Auction::findOrFail($id);
+    $categories = AuctionCategory::all();
+    return view('frontend.auction.edit', compact('auction', 'categories'));
+}
+
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'LotNumber' => 'required',
+        'Title' => 'required',
+        'Description' => 'required',
+        'ArtistName' => 'required',
+        'BuiltYear' => 'required|integer',
+        'AuctionDate' => 'required|date',
+        'EstimatedPrice' => 'required|numeric',
+        'AuctionCategory' => 'required|exists:auction_categories,id',
+        'height' => 'required|numeric',
+        'width' => 'required|numeric',
+        'weight' => 'required|numeric',
+        'Frame' => 'required|boolean',
+        'image' => 'image|nullable',
+    ]);
+
+    $auction = Auction::findOrFail($id);
+    $auction->LotNumber = $request->LotNumber;
+    $auction->Title = $request->Title;
+    $auction->Description = $request->Description;
+    $auction->ArtistName = $request->ArtistName;
+    $auction->BuiltYear = $request->BuiltYear;
+    $auction->AuctionDate = $request->AuctionDate;
+    $auction->EstimatedPrice = $request->EstimatedPrice;
+    $auction->AuctionCategory = $request->AuctionCategory;
+    $auction->height = $request->height;
+    $auction->width = $request->width;
+    $auction->weight = $request->weight;
+    $auction->Frame = $request->Frame;
+
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('images', 'public');
+        $auction->image = $path;
+    }
+
+    $auction->save();
+
+    return redirect()->route('homepage')->with('success', 'Auction item updated successfully.');
+}
+
 }
