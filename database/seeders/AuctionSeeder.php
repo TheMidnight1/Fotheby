@@ -30,6 +30,22 @@ class AuctionSeeder extends Seeder
                 'Frame' => true,
                 'user_id'=>1
             ],
+            [
+                'LotNumber' => '002',
+                'Title' => 'Sunset Over the Ocean 2',
+                'Description' => 'A beautiful painting of a sunset over the ocean. 2',
+                'ArtistName' => 'John Doe 2',
+                'BuiltYear' => 2010,
+                'AuctionDate' => '2024-07-15',
+                'EstimatedPrice' => 1500.00,
+                'AuctionCategory' => 3, 
+                'image' => 'images/sunset.jpg',
+                'height' => 24.00,
+                'width' => 36.00,
+                'weight' => 5.50,
+                'Frame' => true,
+                'user_id'=>2
+            ],
             // Add more auction items here
         ]);
     }

@@ -39,8 +39,13 @@ class AuctionController extends Controller
         return view('frontend.layouts.listing', compact('auctions'));
     }
     public function index()
+
     {
-        $auctions = Auction::all();
+        $user = Auth::user();
+
+        // $auctions = Auction::all();
+        $auctions = Auction::where('user_id', $user->id)->get();
+
         $currentTime = Carbon::now();
 
         foreach ($auctions as $auction) {

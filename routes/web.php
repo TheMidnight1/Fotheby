@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuctionController;
+use App\Http\Controllers\BidController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/auction/{id}/edit', [AuctionController::class, 'edit'])->name('auction.edit');
     Route::post('/auction/{id}/update', [AuctionController::class, 'update'])->name('auction.update');
     Route::delete('/auction/{id}', [AuctionController::class, 'destroy'])->name('auction.destroy');
+
+
+    Route::post('/auctions/{auctionId}/bid', [BidController::class, 'placeBid'])->name('bids.place');
+
 });
 
 require __DIR__ . '/auth.php';

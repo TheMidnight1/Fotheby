@@ -15,12 +15,22 @@ class UsersTableSeeder extends Seeder
     public function run(): void
     {
         DB::table('users')->insert([
-            
-            'name' => 'Admin User',
-            'email' => 'admin@admin.com',
-            'password' => Hash::make('admin'), // Encrypt the password
-            'created_at' => now(),
-            'updated_at' => now(),
+            [
+                'id' => 1,
+                'name' => 'Admin User 1',
+                'email' => 'admin1@admin.com',
+                'password' => Hash::make('admin'), // Encrypt the password
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 2,
+                'name' => 'Admin User 2',
+                'email' => 'admin2@admin.com',
+                'password' => Hash::make('admin'), // Encrypt the password
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
         ]);
     }
 }

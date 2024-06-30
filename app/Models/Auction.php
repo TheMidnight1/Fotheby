@@ -29,4 +29,19 @@ class Auction extends Model
     {
         return $this->belongsTo(AuctionCategory::class, 'AuctionCategory');
     }
+    public function bids()
+    {
+        return $this->hasMany(Bid::class);
+    }
+
+    public function highestBid()
+    {
+        return $this->hasOne(Bid::class)->latest();
+    }
+
+    public function getHighestBidAmountAttribute()
+    {
+        $highestBid = $this->highestBid;
+        return $highestBid ? $highestBid->amount : null;
+    }
 }
