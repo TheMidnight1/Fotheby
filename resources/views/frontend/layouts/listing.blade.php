@@ -38,8 +38,10 @@
         <div class="col-12 mb-3">
             <div class="d-flex justify-content-center">
                 <button class="btn btn-primary mx-1">All Lots</button>
-                <button class="btn btn-success mx-1">Active Lots</button>
-                <button class="btn btn-primary mx-1">Preparing Lots</button>
+                <a href="/login">
+
+                    <button class="btn btn-success mx-1">Login to add items</button>
+                </a>
             </div>
         </div>
         <div class="col-12 mb-3">
@@ -72,11 +74,18 @@
                 </div>
             </div>
             <p>{{ $auction->Description }}</p>
-            <a href="{{ route('auction.show',$auction->id) }}">
+            @guest
+            <a href='/login'>
 
-                <button class="btn btn-primary">VIEW THIS LOT</button>
+                <button class="btn btn-primary">Login to bid</button>
             </a>
-            <a href="{{ route('auction.edit', $auction->id) }}" class="btn btn-warning">EDIT THIS LOT</a>
+            @endguest
+            @auth
+            <a href="{{ route('auction.show', $auction->id) }}" class="btn btn-success">
+              View lot
+            </a>
+
+            @endauth
 
             <!-- <span class="sold-badge">SOLD FOR</span> -->
         </div>

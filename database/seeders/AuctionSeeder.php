@@ -27,7 +27,8 @@ class AuctionSeeder extends Seeder
                 'height' => 24.00,
                 'width' => 36.00,
                 'weight' => 5.50,
-                'Frame' => true
+                'Frame' => true,
+                'user_id'=>1
             ],
             // Add more auction items here
         ]);

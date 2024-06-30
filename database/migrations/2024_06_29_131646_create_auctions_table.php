@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('LotNumber');
             $table->string('Title');
+            $table->unsignedBigInteger('user_id');  // Add this line
+
             $table->text('Description');
             $table->string('ArtistName');
             $table->integer('BuiltYear');
@@ -29,6 +31,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('AuctionCategory')->references('id')->on('auction_categories')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');  // Add this line
+
         });
     }
 

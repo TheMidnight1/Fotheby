@@ -21,5 +21,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $this->call(AuctionCategorySeeder::class);
         $this->call(AuctionSeeder::class);
+        $this->call(UsersTableSeeder::class);
+
     }
 }
