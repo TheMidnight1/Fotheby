@@ -45,7 +45,7 @@
                 <div>
                     <h6>My Items</h6>
                 </div>
-           
+
             </div>
         </div>
         <div class="col-12 mb-3">
@@ -71,12 +71,19 @@
         <div class="col-md-9">
 
             <h5>{{ $auction->Title }}</h5>
-            @if ($auction->isNew)
-            <span class="new-badge">NEW</span>
-            @elseif ($auction->isExpired)
-            <span class="expired-badge">EXPIRED</span>
-            @endif
+            @php
 
+            $createdAt = $auction->created_at;
+            $createdAtDateTime = \Carbon\Carbon::parse($createdAt);
+
+            @endphp
+
+            @if ($createdAtDateTime->addMinutes(15)->isPast())
+            <span class="expired-badge">EXPIRED</span>
+
+            @else
+            <span class="new-badge">NEW</span>
+            @endif
             <div class="d-flex justify-content-between align-items-center mb-3">
 
                 <div>

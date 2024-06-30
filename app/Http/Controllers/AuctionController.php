@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Auction;
 use App\Models\AuctionCategory;
+use App\Models\Bid;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,17 +15,45 @@ class AuctionController extends Controller
 
     public function auctions()
     {
-        $auctions = Auction::all();
+        $user = Auth::user();
+
+        if ($user) {
+
+            $auctions = Auction::where('user_id', '!=', $user->id)->get();
+        } else {
+            $auctions = collect();  
+        }
+        $auction_if_no_auth = Auction::all();
         $currentTime = Carbon::now();
 
+        foreach ($auction_if_no_auth as $auction) {
+            $createdAt = Carbon::parse($auction->created_at);
+
+            if ($createdAt->isSameDay($currentTime)) {
+                // If it's the same day, check the time difference
+                $timeDifference = $currentTime->diffInMinutes($createdAt);
+
+                $auction->isNew = $timeDifference <= 1;
+                $auction->isExpired = $timeDifference > 1;
+            } else if ($createdAt->isBefore($currentTime)) {
+                // If it's a previous day, it's expired
+                $auction->isNew = false;
+                $auction->isExpired = true;
+            } else {
+                // If it's a future day (shouldn't happen normally), consider it new
+                $auction->isNew = true;
+                $auction->isExpired = false;
+            }
+        }
         foreach ($auctions as $auction) {
             $createdAt = Carbon::parse($auction->created_at);
 
             if ($createdAt->isSameDay($currentTime)) {
                 // If it's the same day, check the time difference
                 $timeDifference = $currentTime->diffInMinutes($createdAt);
-                $auction->isNew = $timeDifference <= 15;
-                $auction->isExpired = $timeDifference > 15;
+
+                $auction->isNew = $timeDifference <= 1;
+                $auction->isExpired = $timeDifference > 1;
             } else if ($createdAt->isBefore($currentTime)) {
                 // If it's a previous day, it's expired
                 $auction->isNew = false;
@@ -36,45 +65,49 @@ class AuctionController extends Controller
             }
         }
 
-        return view('frontend.layouts.listing', compact('auctions'));
+        return view('frontend.layouts.listing', compact('auctions', 'auction_if_no_auth'));
     }
     public function index()
 
     {
         $user = Auth::user();
-
-        // $auctions = Auction::all();
         $auctions = Auction::where('user_id', $user->id)->get();
+        $currentTime = Carbon::now();
+        return view('frontend.layouts.index', compact('auctions', 'currentTime'));
+    }
 
+    public function show($auctionId)
+    {
         $currentTime = Carbon::now();
 
-        foreach ($auctions as $auction) {
-            $createdAt = Carbon::parse($auction->created_at);
+        $user = Auth::user();
 
-            if ($createdAt->isSameDay($currentTime)) {
-                // If it's the same day, check the time difference
-                $timeDifference = $currentTime->diffInMinutes($createdAt);
-                $auction->isNew = $timeDifference <= 15;
-                $auction->isExpired = $timeDifference > 15;
-            } else if ($createdAt->isBefore($currentTime)) {
-                // If it's a previous day, it's expired
-                $auction->isNew = false;
-                $auction->isExpired = true;
-            } else {
-                // If it's a future day (shouldn't happen normally), consider it new
-                $auction->isNew = true;
-                $auction->isExpired = false;
-            }
+        $auction = Auction::findOrFail($auctionId);
+        $createdAt = $auction->created_at;
+
+        $createdAtDateTime = Carbon::parse($createdAt);
+
+    
+        // Check if the user has already placed a bid on this auction
+        $existingBid = Bid::where('auction_id', $auctionId)
+            ->where('user_id', $user->id)
+            ->first();
+    
+        // Check if the auction has expired
+        $isExpired = $createdAtDateTime->addMinutes(15)->isPast();
+    
+        // Get the final bid details if the auction is expired
+        $finalBid = null;
+        if ($isExpired) {
+            $finalBid = Bid::where('auction_id', $auctionId)
+                ->orderBy('amount', 'desc')
+                ->first();
         }
-
-        return view('frontend.layouts.index', compact('auctions'));
+    
+        return view('frontend.auction.show', compact('auction', 'existingBid', 'isExpired', 'finalBid'));
     }
+    
 
-    public function show($id)
-    {
-        $auction = Auction::findOrFail($id);
-        return view('frontend.auction.show', compact('auction'));
-    }
 
     public function create()
     {
